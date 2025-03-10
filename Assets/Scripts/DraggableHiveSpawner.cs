@@ -22,9 +22,10 @@ public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandl
             return;
         }
 
-        // Convert the screen position to world position and spawn the hive object
+        // tworzy hive
         Vector3 spawnPos = GetWorldPosition(eventData.position);
         currentSpawnedHive = Instantiate(hivePrefab, spawnPos, Quaternion.identity);
+        
     }
 
     public void OnDrag(PointerEventData eventData)
