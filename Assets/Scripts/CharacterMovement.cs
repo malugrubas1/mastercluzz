@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour
 {
-    public static float playerSpeed = 3.3f;
+    public static float playerSpeed = 4.0f;
     public bool isAlive = true;
     public SpriteRenderer spriteRenderer;
-    public static int playerHealth = 3;
+    public static int playerHealth = 1;
     public GameObject player;
 
     void Start()
