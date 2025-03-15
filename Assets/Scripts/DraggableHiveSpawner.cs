@@ -4,14 +4,16 @@ using UnityEngine.EventSystems;
 public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public GameObject hivePrefab;  // Drag your hive prefab here in the Inspector
-    public float spawnDepth = 10f;   // Adjust based on your camera and scene setup
+    public float spawnDepth = 5f;   // Adjust based on your camera and scene setup
 
     private Vector3 originalPosition;  // To store the UI image's original screen position
     private GameObject currentSpawnedHive;  // Reference to the spawned hive in the scene
+    PlayerValues PlayerVal;
 
     void Awake()
     {
         originalPosition = transform.position;
+        PlayerVal = GameObject.FindGameObjectWithTag("Logic").GetComponent<PlayerValues>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -22,7 +24,7 @@ public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandl
             return;
         }
 
-        // tworzy hive
+        PlayerVal.Tier1Hive.HivePCount += 1;
         Vector3 spawnPos = GetWorldPosition(eventData.position);
         currentSpawnedHive = Instantiate(hivePrefab, spawnPos, Quaternion.identity);
         

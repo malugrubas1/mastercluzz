@@ -7,6 +7,8 @@ public class LogicManager : MonoBehaviour
 {
 
     public PlayerValues PlayerVal;
+    public int WaveCounter = 0;
+    public Text WaveCounterT;
     void Start()
     {
         
@@ -14,9 +16,13 @@ public class LogicManager : MonoBehaviour
 
     void Update()
     {
-        
+        WaveCounterT.text = WaveCounter.ToString();
     }
 
+    public void StartWave()
+    {
+        WaveCounter += 1;
+    }
     public void EndWave()
     {
         PlayerVal.AddIncome();

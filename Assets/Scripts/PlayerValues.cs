@@ -43,6 +43,6 @@ public class PlayerValues : MonoBehaviour
 
     public void AddIncome()
     {
-        Honey = Honey + IncomeTotal(Tier1Hive.IncomePerWave(Tier1Hive.HivePCount, Tier1Hive.Income), Tier2Hive.IncomePerWave(Tier2Hive.HivePCount, Tier2Hive.Income), Tier3Hive.IncomePerWave(Tier3Hive.HivePCount, Tier3Hive.Income));
+        Honey += IncomeTotal(Tier1Hive.IncomePerWave(Tier1Hive.HivePCount, Tier1Hive.Income), Tier2Hive.IncomePerWave(Tier2Hive.HivePCount, Tier2Hive.Income), Tier3Hive.IncomePerWave(Tier3Hive.HivePCount, Tier3Hive.Income));
     }
 }

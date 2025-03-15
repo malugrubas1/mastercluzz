@@ -12,7 +12,6 @@ public class CharacterMovement : MonoBehaviour
 
     void Start()
     {
-       // logic = GameObject.FindGameObjectWithTag("Logic").GetComponent<logicScript>();
         transform.position = new Vector3(transform.position.x, transform.position.y, 1.0f);
         playerHealth = 3;
     }
@@ -29,7 +28,6 @@ public class CharacterMovement : MonoBehaviour
         {
             isAlive = false;
             Destroy(player);
-           // logic.gameOver();
         }
     }
 }
