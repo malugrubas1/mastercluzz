@@ -13,7 +13,6 @@ public class CharacterMovement : MonoBehaviour
     void Start()
     {
         transform.position = new Vector3(transform.position.x, transform.position.y, 1.0f);
-        playerHealth = 3;
     }
 
     void Update()

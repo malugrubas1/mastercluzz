@@ -28,38 +28,20 @@ public class PlayerValues : MonoBehaviour
         Tier1Hive.Income = 100;
         Tier2Hive.Income = 200;
         Tier3Hive.Income = 300;
-
-        if (HoneyCounter == null)
-        {
-            Debug.LogError("❌ HoneyCounter is NOT assigned in the Inspector!");
-        }
     }
 
     void Update()
-    {
-        if (HoneyCounter != null)
-        {
-            HoneyCounter.text = Honey.ToString();
-        }
-    }
-
-    public int IncomeTotal(int a, int b, int c)
-    {
-        return a + b + c;
+    { 
+        HoneyCounter.text = Honey.ToString();
     }
 
     public void AddIncome()
     {
-        Debug.Log("📦 AddIncome() called");
-
-        int income = IncomeTotal(
-            Tier1Hive.IncomePerWave(Tier1Hive.HivePCount, Tier1Hive.Income),
-            Tier2Hive.IncomePerWave(Tier2Hive.HivePCount, Tier2Hive.Income),
-            Tier3Hive.IncomePerWave(Tier3Hive.HivePCount, Tier3Hive.Income)
-        );
+        int income = 
+            Tier1Hive.IncomePerWave(Tier1Hive.HivePCount, Tier1Hive.Income) +
+            Tier2Hive.IncomePerWave(Tier2Hive.HivePCount, Tier2Hive.Income) +
+            Tier3Hive.IncomePerWave(Tier3Hive.HivePCount, Tier3Hive.Income);
 
         Honey += income;
-
-        Debug.Log("🍯 Honey after income: " + Honey);
     }
 }

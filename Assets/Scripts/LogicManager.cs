@@ -6,19 +6,14 @@ public class LogicManager : MonoBehaviour
 
     void Start()
     {
-        playerValues = GetComponent<PlayerValues>();
-        if (playerValues == null)
-        {
-            Debug.LogError("❌ LogicManager couldn't find PlayerValues on the same GameObject!");
-        }
+        playerValues = GetComponent<PlayerValues>();   
+       
     }
 
     public void EndWave()
     {
-        Debug.Log("✅ Wave ended! Awarding income...");
-        if (playerValues != null)
-        {
-            playerValues.AddIncome();
-        }
+
+       playerValues.AddIncome();
+
     }
 }
