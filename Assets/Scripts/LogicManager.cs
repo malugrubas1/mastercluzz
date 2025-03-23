@@ -11,7 +11,7 @@ public class LogicManager : MonoBehaviour
     public WaveSpawner WaveSpawner;
     void Start()
     {
-        WaveSpawner = GameObject.FindGameObjectWithTag("Logic").GetComponent<WaveSpawner>();
+        WaveSpawner = GameObject.FindGameObjectWithTag("WaveLogic").GetComponent<WaveSpawner>();
     }
 
     void Update()

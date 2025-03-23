@@ -4,37 +4,61 @@ using UnityEngine.EventSystems;
 public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     public GameObject hivePrefab;  // Drag your hive prefab here in the Inspector
-    public float spawnDepth = 10f;   // Adjust based on your camera and scene setup
+    public float spawnDepth = 10f; // Adjust based on your camera and scene setup
 
-    private Vector3 originalPosition;  // To store the UI image's original screen position
-    private GameObject currentSpawnedHive;  // Reference to the spawned hive in the scene
-    PlayerValues PlayerVal;
+    private Vector3 originalPosition;           // To store the UI image's original screen position
+    private GameObject currentSpawnedHive;      // Reference to the spawned hive in the scene
+    private PlayerValues PlayerVal;             // Reference to your PlayerValues script
 
     void Awake()
     {
         originalPosition = transform.position;
-        PlayerVal = GameObject.FindGameObjectWithTag("Logic").GetComponent<PlayerValues>();
+
+        GameObject logicObj = GameObject.FindGameObjectWithTag("Logic");
+        if (logicObj == null)
+        {
+            Debug.LogError("❌ No GameObject with tag 'Logic' found in the scene!");
+        }
+        else
+        {
+            PlayerVal = logicObj.GetComponent<PlayerValues>();
+            if (PlayerVal == null)
+            {
+                Debug.LogError("❌ The GameObject with tag 'Logic' does NOT have a PlayerValues component attached!");
+            }
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (hivePrefab == null)
         {
-            Debug.LogError("Hive prefab not assigned in DraggableHiveSpawner!");
+            Debug.LogError("❌ Hive prefab not assigned in the Inspector!");
             return;
         }
 
-        PlayerVal.Tier1Hive.HivePCount += 1;
+        if (PlayerVal == null)
+        {
+            Debug.LogError("❌ PlayerVal is null! Check if the 'Logic' object exists and has the PlayerValues component.");
+            return;
+        }
+
+        if (PlayerVal.Tier1Hive == null)
+        {
+            Debug.LogError("❌ Tier1Hive is null in PlayerValues! Make sure it's assigned.");
+            return;
+        }
+
+        PlayerVal.Tier1Hive.HivePCount++;
+
         Vector3 spawnPos = GetWorldPosition(eventData.position);
         currentSpawnedHive = Instantiate(hivePrefab, spawnPos, Quaternion.identity);
-        
     }
 
     public void OnDrag(PointerEventData eventData)
     {
         if (currentSpawnedHive != null)
         {
-            // Update the spawned hive's position to follow the mouse
             Vector3 worldPos = GetWorldPosition(eventData.position);
             currentSpawnedHive.transform.position = worldPos;
         }
@@ -44,7 +68,6 @@ public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandl
     {
         // Reset the UI image back to its original position in the UI
         transform.position = originalPosition;
-        // The spawned hive remains in the scene; clear the reference
         currentSpawnedHive = null;
     }
 
