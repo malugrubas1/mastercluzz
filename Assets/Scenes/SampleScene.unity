@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 26678191}
   m_Layer: 0
   m_Name: tloCollider
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -578,7 +578,7 @@ GameObject:
   - component: {fileID: 461319768}
   m_Layer: 0
   m_Name: tlo (1)
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1264,7 +1264,7 @@ GameObject:
   - component: {fileID: 1322277114}
   m_Layer: 0
   m_Name: tloCollider
-  m_TagString: Untagged
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1815,9 +1815,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af742d03f74e30d42ae9d4d400b8ff69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerVal: {fileID: 1806730131}
-  WaveCounterT: {fileID: 988319245}
-  WaveSpawner: {fileID: 873546679}
 --- !u!4 &1806730133
 Transform:
   m_ObjectHideFlags: 0

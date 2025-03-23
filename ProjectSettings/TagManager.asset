@@ -8,6 +8,7 @@ TagManager:
   - Hive
   - Enemy
   - WaveLogic
+  - Environment
   layers:
   - Default
   - TransparentFX

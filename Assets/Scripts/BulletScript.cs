@@ -29,4 +29,18 @@ public class BulletScript : MonoBehaviour
         Destroy(bullet, 0.8f);
         transform.position = new Vector3(transform.position.x, transform.position.y, -1f);
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
+        {
+            Destroy(bullet);
+        }
+
+        if (other.CompareTag("Environment"))
+        {
+            // respi efekt rozkurwienia na pozycji bullet.transfrom.jebac elona muska
+            Destroy(bullet);
+        }
+    }
 }
