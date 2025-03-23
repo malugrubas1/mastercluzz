@@ -7,6 +7,7 @@ TagManager:
   - Logic
   - Hive
   - Enemy
+  - Environment
   layers:
   - Default
   - TransparentFX

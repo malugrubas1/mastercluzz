@@ -30,12 +30,4 @@ public class CharacterMovement : MonoBehaviour
             Destroy(player);
         }
     }
-
-    public void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            playerHealth--;
-        }
-    }
 }

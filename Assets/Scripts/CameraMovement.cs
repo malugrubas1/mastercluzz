@@ -14,5 +14,6 @@ public class CameraMovement : MonoBehaviour
     void Update()
     {
         transform.position = Vector2.MoveTowards(transform.position, target.transform.position, CharacterMovement.playerSpeed * Time.deltaTime);
+        transform.position = new Vector3(transform.position.x, transform.position.y, -10f);
     }
 }

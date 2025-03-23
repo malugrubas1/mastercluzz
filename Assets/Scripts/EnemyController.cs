@@ -20,4 +20,11 @@ public class EnemyController : MonoBehaviour
         Vector2 direction = target.position - transform.position;
         direction.Normalize();
     }
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            CharacterMovement.playerHealth--;
+        }
+    }
 }
