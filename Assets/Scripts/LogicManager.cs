@@ -2,18 +2,22 @@ using UnityEngine;
 
 public class LogicManager : MonoBehaviour
 {
-    private PlayerValues playerValues;
+    [SerializeField] private PlayerValues playerValues;
 
     void Start()
     {
-        playerValues = GetComponent<PlayerValues>();   
-       
+        if (playerValues == null)
+        {
+            Debug.LogError("❌ PlayerValues is not assigned in LogicManager Inspector!");
+        }
     }
 
     public void EndWave()
     {
-
-       playerValues.AddIncome();
-
+        Debug.Log("✅ Wave ended! Awarding income...");
+        if (playerValues != null)
+        {
+            playerValues.AddIncome();
+        }
     }
 }
