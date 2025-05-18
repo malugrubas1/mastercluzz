@@ -6,6 +6,12 @@ public class HivePlacer : MonoBehaviour
     private GameObject currentHive; // Current hive instance
 
     private bool isPlacing = false;
+    private PlayerValues PlayerVal;
+
+    private void Start()
+    {
+        PlayerVal = GameObject.FindGameObjectWithTag("Logic").GetComponent<PlayerValues>();
+    }
 
     void Update()
     {
@@ -29,8 +35,9 @@ public class HivePlacer : MonoBehaviour
 
     public void StartPlacingHive()
     {
-        // Start the placement process and instantiate a Hive object in the scene
-        currentHive = Instantiate(hivePrefab);
-        isPlacing = true;
+       
+            // Start the placement process and instantiate a Hive object in the scene
+            currentHive = Instantiate(hivePrefab);
+            isPlacing = true;      
     }
 }

@@ -23,6 +23,8 @@ public class PlayerAimWeapon : MonoBehaviour
 
     void Update()
     {
+        if(UIManager.isPaused == false)
+        {
         Vector3 mousePosition = GetMouseWorldPosition();
         Vector3 aimDirection = (mousePosition - aimTransform.position).normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
@@ -40,6 +42,7 @@ public class PlayerAimWeapon : MonoBehaviour
         aimTransform.localScale = a;
 
         HandleShooting();
+        }
     }
     private Vector3 GetMouseWorldPosition()
     {
@@ -50,7 +53,7 @@ public class PlayerAimWeapon : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && UIManager.isPaused == false)
         {
             Instantiate(Bullet, aimGunEndPointTransform.position, transform.rotation);
             Vector3 mousePosition = GetMouseWorldPosition();

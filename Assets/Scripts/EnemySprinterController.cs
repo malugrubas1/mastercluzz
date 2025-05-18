@@ -8,10 +8,11 @@ public class EnemySprinterController : MonoBehaviour
     public Transform target;
     private float health = 3;
     public GameObject enemy;
+    public WaveSpawner WS;
 
     void Start()
     {
-        
+        WS = GameObject.FindGameObjectWithTag("WaveLogic").GetComponent<WaveSpawner>();
     }
 
     // Update is called once per frame
@@ -26,6 +27,7 @@ public class EnemySprinterController : MonoBehaviour
         if (health <= 0)
         {
             Destroy(enemy);
+            WS.GreenFuckNiggers();
         }
     }
     public void OnTriggerEnter2D(Collider2D other)

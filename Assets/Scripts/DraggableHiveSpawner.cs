@@ -48,11 +48,14 @@ public class DraggableHiveSpawner : MonoBehaviour, IBeginDragHandler, IDragHandl
             Debug.LogError("❌ Tier1Hive is null in PlayerValues! Make sure it's assigned.");
             return;
         }
+        if (PlayerVal.Tier1Hive.HiveTBPCount > 0)
+        {
+            PlayerVal.Tier1Hive.HivePCount++;
+            PlayerVal.Tier1Hive.HiveTBPCount--;
 
-        PlayerVal.Tier1Hive.HivePCount++;
-
-        Vector3 spawnPos = GetWorldPosition(eventData.position);
-        currentSpawnedHive = Instantiate(hivePrefab, spawnPos, Quaternion.identity);
+            Vector3 spawnPos = GetWorldPosition(eventData.position);
+            currentSpawnedHive = Instantiate(hivePrefab, spawnPos, Quaternion.identity);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WaveSpawner : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class WaveSpawner : MonoBehaviour
     private float waveTimer;
     private float spawnInterval;
     private float spawnTimer;
+    public Text currentWave;
 
     public LogicManager LogicManager;
 
@@ -28,6 +30,7 @@ public class WaveSpawner : MonoBehaviour
 
     void FixedUpdate()
     {
+        currentWave.text = currWave.ToString();
         if (spawnTimer <= 0)
         {
             if (enemiesToSpawn.Count > 0)
@@ -55,6 +58,11 @@ public class WaveSpawner : MonoBehaviour
             currWave++;
             GenerateWave();
         }
+    }
+
+    public void GreenFuckNiggers()
+    {
+        spawnedEnemies.RemoveAt(0);
     }
 
     public void GenerateWave()

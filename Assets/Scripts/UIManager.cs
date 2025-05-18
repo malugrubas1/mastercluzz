@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     public GameObject deathScreenPanel;
     public GameObject hiveUIPanel;
 
-    private bool isPaused = false;
+    public static bool isPaused = false;
 
     void Start()
     {

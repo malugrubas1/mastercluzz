@@ -19,6 +19,8 @@ public class PlayerValues : MonoBehaviour
     [SerializeField] public int Honey = 0;
     [SerializeField] public Text HoneyCounter;
 
+    [SerializeField] public Text Tier1hiveCounter;
+
     public Hive Tier1Hive = new Hive();
     public Hive Tier2Hive = new Hive();
     public Hive Tier3Hive = new Hive();
@@ -28,11 +30,15 @@ public class PlayerValues : MonoBehaviour
         Tier1Hive.Income = 100;
         Tier2Hive.Income = 200;
         Tier3Hive.Income = 300;
+
+        Tier1Hive.HiveTBPCount = 3;
+        Tier1Hive.HivePCount = 0;
     }
 
     void Update()
     { 
         HoneyCounter.text = Honey.ToString();
+        Tier1hiveCounter.text = Tier1Hive.HiveTBPCount.ToString();
     }
 
     public void AddIncome()
@@ -44,4 +50,8 @@ public class PlayerValues : MonoBehaviour
 
         Honey += income;
     }
+
+    
 }
+
+
