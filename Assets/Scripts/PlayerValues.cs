@@ -21,30 +21,24 @@ public class TurretStats
 
 public class PlayerValues : MonoBehaviour
 {
-    [Header("Economy")]
     public int Honey = 0;
 
-    [Header("UI References")]
     public Text HoneyCounter;
     public Text Tier1HiveCounter;
     public Text TurretCountText;
 
-    [Header("Hive Data")]
     public Hive Tier1Hive = new Hive();
     public Hive Tier2Hive = new Hive();
     public Hive Tier3Hive = new Hive();
 
-    [Header("Turret Data")]
     public TurretStats BasicTurret = new TurretStats();
 
     private void Start()
     {
-        // Hive Income Settings
         Tier1Hive.Income = 100;
         Tier2Hive.Income = 200;
         Tier3Hive.Income = 300;
 
-        // Initial Hive and Turret Placement Values
         Tier1Hive.HiveTBPCount = 3;
         Tier1Hive.HivePCount = 0;
 
@@ -54,13 +48,8 @@ public class PlayerValues : MonoBehaviour
 
     private void Update()
     {
-        if (HoneyCounter != null)
             HoneyCounter.text = Honey.ToString();
-
-        if (Tier1HiveCounter != null)
             Tier1HiveCounter.text = Tier1Hive.HiveTBPCount.ToString();
-
-        if (TurretCountText != null)
             TurretCountText.text = BasicTurret.TurretTBPCount.ToString();
     }
 
