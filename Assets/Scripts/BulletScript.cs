@@ -11,6 +11,7 @@ public class BulletScript : MonoBehaviour
     private Rigidbody2D rb;
     public static float bulletSpread = 1.2f;
     public Transform player;
+    [SerializeField] private GameObject bloodParticle;
 
     public Vector3? overrideDirection = null;
 
@@ -44,7 +45,13 @@ public class BulletScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Enemy") || other.CompareTag("Environment"))
+        if (other.CompareTag("Enemy"))
+        {
+            Destroy(bullet);
+            Instantiate(bloodParticle, transform.position, Quaternion.identity);
+        }
+
+        if (other.CompareTag("Environment"))
         {
             Destroy(bullet);
         }

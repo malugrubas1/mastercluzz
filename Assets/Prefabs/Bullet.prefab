@@ -242,6 +242,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bullet: {fileID: 6151318232511856782}
   player: {fileID: 0}
+  bloodParticle: {fileID: 2904089589029571844, guid: 9bb6f081b97023d419b3fbbe7e1760cd, type: 3}
 --- !u!50 &6151318232511856776
 Rigidbody2D:
   serializedVersion: 4
