@@ -6,8 +6,10 @@ public class TurretObject : MonoBehaviour
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private Transform firePoint;
+    [SerializeField] public int maxShots = 300; // number of bullets before self-destruction
 
     private float fireCooldown;
+    private int shotsFired = 0;
 
     private void Update()
     {
@@ -53,6 +55,15 @@ public class TurretObject : MonoBehaviour
         if (bulletScript != null)
         {
             bulletScript.overrideDirection = direction;
+        }
+
+        // increment shot counter
+        shotsFired++;
+
+        // destroy turret if it has fired too many times
+        if (shotsFired >= maxShots)
+        {
+            Destroy(gameObject);
         }
     }
 }

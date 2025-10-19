@@ -1307,7 +1307,7 @@ GameObject:
   - component: {fileID: 403142452}
   - component: {fileID: 403142451}
   m_Layer: 5
-  m_Name: Text (Legacy)
+  m_Name: wave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2174,7 +2174,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &873546679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2198,9 +2198,10 @@ MonoBehaviour:
   - {fileID: 873546680}
   spawnIndex: 0
   waveDuration: 12
-  currentWave: {fileID: 988319245}
-  LogicManager: {fileID: 0}
-  spawnedEnemies: []
+  currentWave: {fileID: 403142451}
+  LogicManager: {fileID: 1806730132}
+  spawnedEnemies:
+  - {fileID: 0}
 --- !u!4 &873546680
 Transform:
   m_ObjectHideFlags: 0
