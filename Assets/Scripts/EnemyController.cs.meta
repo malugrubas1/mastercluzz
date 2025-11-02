@@ -3,7 +3,9 @@ guid: 0c54c00e6ba07d64186c9d7d6ebbaf7d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - damageNumberPrefab: {fileID: 12365455552582866, guid: 0c0a3c83dd5561c44b116d90d136a7d0, type: 3}
+  - WS: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

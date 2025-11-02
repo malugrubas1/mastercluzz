@@ -4,103 +4,175 @@ using UnityEngine.UI;
 
 public class WaveSpawner : MonoBehaviour
 {
-    public List<Enemy> enemies = new List<Enemy>();
-    public int currWave;
-    private int waveValue;
-    public List<GameObject> enemiesToSpawn = new List<GameObject>();
+    [Header("Enemy Prefabs (assign both)")]
+    public GameObject enemyPrefabA;
+    public GameObject enemyPrefabB;
 
-    public Transform[] spawnLocation;
-    public int spawnIndex;
+    [Header("Difficulty / Wave Size")]
+    public int baseEnemies = 6;
+    public float enemiesPerWave = 2.0f;
+    public int variance = 3;
+    [Range(0f, 1f)] public float prefabBChance = 0.5f;
 
-    public int waveDuration;
-    private float waveTimer;
-    private float spawnInterval;
-    private float spawnTimer;
-    public Text currentWave;
+    [Header("Spawn Settings")]
+    public List<Transform> spawnPoints = new List<Transform>();
+    public bool randomizeSpawnPoint = true;
+    public int waveDuration = 12;
 
-    public LogicManager LogicManager;
+    [Header("Between Waves")]
+    public float breakDuration = 5f;   // <-- 5s break between waves
+    public Text currentWaveText;
 
+    [Header("References")]
+    public LogicManager logicManager;
+
+    [Header("Debug Info")]
     public List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    // internals
+    public int currWave = 1;
+    private List<GameObject> enemiesToSpawn = new List<GameObject>();
+    private float waveTimer;
+    private float spawnTimer;
+    private float spawnInterval;
+    private int nextSpawnIndex;
+
+    private enum SpawnerState { Spawning, WaitingClear, Break }
+    private SpawnerState state = SpawnerState.Spawning;
+    private float breakTimer;
 
     void Start()
     {
-        LogicManager = GameObject.FindGameObjectWithTag("Logic").GetComponent<LogicManager>();
+        if (!logicManager)
+        {
+            var logic = GameObject.FindGameObjectWithTag("Logic");
+            if (logic) logicManager = logic.GetComponent<LogicManager>();
+        }
+
+        if (!enemyPrefabA || !enemyPrefabB)
+        {
+            Debug.LogError("[WaveSpawner] Assign both enemyPrefabA and enemyPrefabB.");
+            enabled = false; return;
+        }
+        if (spawnPoints == null || spawnPoints.Count == 0)
+        {
+            Debug.LogError("[WaveSpawner] No spawn points set. Drag Transforms into 'spawnPoints'.");
+            enabled = false; return;
+        }
+        if (currWave < 1) currWave = 1;
+
         GenerateWave();
     }
 
     void FixedUpdate()
     {
-        currentWave.text = currWave.ToString();
-        if (spawnTimer <= 0)
+        // UI hint (optional): show “Break” countdown
+        if (currentWaveText)
         {
-            if (enemiesToSpawn.Count > 0)
-            {
-                GameObject enemy = Instantiate(enemiesToSpawn[0], spawnLocation[spawnIndex].position, Quaternion.identity);
-                enemiesToSpawn.RemoveAt(0);
-                spawnedEnemies.Add(enemy);
-                spawnTimer = spawnInterval;
+            if (state == SpawnerState.Break)
+                currentWaveText.text = $"Wave {currWave} — Break: {Mathf.CeilToInt(breakTimer)}s";
+            else
+                currentWaveText.text = $"Wave {currWave}";
+        }
 
-                spawnIndex = (spawnIndex + 1) % spawnLocation.Length;
+        // Handle break
+        if (state == SpawnerState.Break)
+        {
+            breakTimer -= Time.fixedDeltaTime;
+            if (breakTimer <= 0f)
+            {
+                currWave++;
+                GenerateWave();
+            }
+            return; // nothing else during break
+        }
+
+        // Normal spawning cadence
+        if (state == SpawnerState.Spawning)
+        {
+            if (spawnTimer <= 0f)
+            {
+                if (enemiesToSpawn.Count > 0)
+                {
+                    SpawnEnemy();
+                    spawnTimer = spawnInterval;
+                }
+                else
+                {
+                    state = SpawnerState.WaitingClear; // spawned everything; wait for clears/time
+                }
             }
             else
             {
-                waveTimer = 0;
+                spawnTimer -= Time.fixedDeltaTime;
             }
         }
-        else
-        {
-            spawnTimer -= Time.fixedDeltaTime;
-            waveTimer -= Time.fixedDeltaTime;
-        }
 
-        if (waveTimer <= 0 && spawnedEnemies.Count <= 0)
+        // wave timer counts down regardless (pacing)
+        if (waveTimer > 0f) waveTimer -= Time.fixedDeltaTime;
+
+        // When timer finished AND no enemies alive → end wave → start break
+        if (waveTimer <= 0f && spawnedEnemies.Count == 0 && state != SpawnerState.Break)
         {
-            currWave++;
-            GenerateWave();
+            if (logicManager) logicManager.EndWave();
+            state = SpawnerState.Break;
+            breakTimer = breakDuration;   // <-- start 5s break
         }
     }
 
-    public void GreenFuckNiggers()
+    private void GenerateWave()
     {
-        spawnedEnemies.RemoveAt(0);
-    }
+        // build random mix for this wave
+        int extra = (variance > 0) ? Random.Range(0, variance + 1) : 0;
+        int totalThisWave = Mathf.Max(1, Mathf.RoundToInt(baseEnemies + enemiesPerWave * (currWave - 1)) + extra);
 
-    public void GenerateWave()
-    {
-        waveValue = currWave * 5;
-        GenerateEnemies();
-        spawnInterval = waveDuration / Mathf.Max(enemiesToSpawn.Count, 1);
+        enemiesToSpawn.Clear();
+        spawnedEnemies.Clear();
+
+        for (int i = 0; i < totalThisWave; i++)
+        {
+            bool pickB = Random.value < prefabBChance;
+            enemiesToSpawn.Add(pickB ? enemyPrefabB : enemyPrefabA);
+        }
+
+        // shuffle
+        for (int i = enemiesToSpawn.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (enemiesToSpawn[i], enemiesToSpawn[j]) = (enemiesToSpawn[j], enemiesToSpawn[i]);
+        }
+
+        spawnInterval = Mathf.Max(0.05f, (float)waveDuration / Mathf.Max(1, enemiesToSpawn.Count));
         waveTimer = waveDuration;
+        spawnTimer = 0f;
+        state = SpawnerState.Spawning;
 
-        LogicManager.EndWave();
+        Debug.Log($"[WaveSpawner] Wave {currWave}: total={totalThisWave}, points={spawnPoints.Count}, interval={spawnInterval:0.00}s");
     }
 
-    public void GenerateEnemies()
+    private void SpawnEnemy()
     {
-        List<GameObject> generatedEnemies = new List<GameObject>();
-        while (waveValue > 0 && generatedEnemies.Count < 50)
-        {
-            int randEnemyId = Random.Range(0, enemies.Count);
-            int randEnemyCost = enemies[randEnemyId].cost;
+        Transform point = randomizeSpawnPoint
+            ? spawnPoints[Random.Range(0, spawnPoints.Count)]
+            : spawnPoints[(nextSpawnIndex++) % spawnPoints.Count];
 
-            if (waveValue - randEnemyCost >= 0)
-            {
-                generatedEnemies.Add(enemies[randEnemyId].enemyPrefab);
-                waveValue -= randEnemyCost;
-            }
-            else
-            {
-                break;
-            }
-        }
+        var prefab = enemiesToSpawn[0];
+        enemiesToSpawn.RemoveAt(0);
 
-        enemiesToSpawn = generatedEnemies;
+        var enemy = Instantiate(prefab, point.position, Quaternion.identity);
+        spawnedEnemies.Add(enemy);
     }
-}
 
-[System.Serializable]
-public class Enemy
-{
-    public GameObject enemyPrefab;
-    public int cost;
+    // called by enemies when they die/despawn
+    public void EnterNameHere(GameObject enemyInstance)
+    {
+        if (!enemyInstance) return;
+        spawnedEnemies.Remove(enemyInstance);
+    }
+
+    // legacy fallback
+    public void EnterNameHere()
+    {
+        if (spawnedEnemies.Count > 0) spawnedEnemies.RemoveAt(0);
+    }
 }
