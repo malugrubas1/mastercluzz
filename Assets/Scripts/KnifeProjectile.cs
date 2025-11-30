@@ -4,9 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class KnifeProjectile : MonoBehaviour
 {
-    public float damage = 9999f;
+    public float damage = 1f;
     public float maxLifetime = 3f;   // how long the knife lives if it hits nothing
-
+    [SerializeField] private GameObject bloodParticle;
     private float life;
 
     void Awake()
@@ -29,6 +29,7 @@ public class KnifeProjectile : MonoBehaviour
         {
             // Let enemies handle damage however they want
             other.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+            Instantiate(bloodParticle, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
         else if (!other.isTrigger)

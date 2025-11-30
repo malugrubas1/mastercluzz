@@ -1381,7 +1381,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b5ff95830d6ee9246a5de187f06199fc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f0657c6fc9d289478c9ab5d3fa7cb07, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2214,7 +2214,7 @@ MonoBehaviour:
   breakPanel: {fileID: 0}
   breakLabel: {fileID: 0}
   startWaveButton: {fileID: 0}
-  currentWaveText: {fileID: 403142451}
+  currentWaveText: {fileID: 988319245}
   logicManager: {fileID: 1806730132}
   spawnedEnemies: []
   currWave: 0
@@ -4023,7 +4023,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b5ff95830d6ee9246a5de187f06199fc, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8f0657c6fc9d289478c9ab5d3fa7cb07, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

@@ -90,13 +90,7 @@ public class WaveSpawner : MonoBehaviour
     void FixedUpdate()
     {
         // UI label
-        if (currentWaveText)
-        {
-            if (state == SpawnerState.Break)
-                currentWaveText.text = $"Wave {Mathf.Max(1, currWave + 1)} (waiting)";
-            else
-                currentWaveText.text = $"Wave {currWave}";
-        }
+        currentWaveText.text = currWave.ToString();
 
         if (state == SpawnerState.Break) return;
 
