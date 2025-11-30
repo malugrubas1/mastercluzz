@@ -34,7 +34,7 @@ public class EnemyController : MonoBehaviour
         // Find hive target
         if (!target)
         {
-            GameObject hive = GameObject.FindGameObjectWithTag("Hive");
+            GameObject hive = GameObject.FindGameObjectWithTag("Player");
             if (hive) target = hive.transform;
         }
 

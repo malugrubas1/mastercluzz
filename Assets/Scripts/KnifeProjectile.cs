@@ -6,6 +6,7 @@ public class KnifeProjectile : MonoBehaviour
 {
     public float damage = 9999f;
     public float maxLifetime = 3f;
+    [SerializeField] private GameObject bloodParticle;
 
     // 🔥 Add this:
     public float spinSpeed = 720f;  // how fast the knife spins while flying
@@ -34,6 +35,7 @@ public class KnifeProjectile : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             other.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+            Instantiate(bloodParticle, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }
         else if (!other.isTrigger)

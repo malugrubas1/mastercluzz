@@ -2,6 +2,7 @@ using System.Collections;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerAimWeapon : MonoBehaviour
 {
@@ -16,9 +17,21 @@ public class PlayerAimWeapon : MonoBehaviour
     public Transform aimGunEndPointTransform;
     public GameObject Bullet;
 
+    public int bulletCount;
+    public bool isReloading = false;
+    public Text ammoCount;
+    public Text Reloading;
+    public GameObject ReloadingText;
+
+    public int maxAmmo = 17;  // BEDZIE ZDEFINIOWANE I ZMIENIAC SIE DLA KAZDEJ BRONI (PODANE SA DLA PISTOLETU)
+    public float reloadTime = 2f;
+
+   
+
     private void Awake()
     {
         aimTransform = transform.Find("Aim");
+        bulletCount = maxAmmo;
     }
 
     void Update()
@@ -42,6 +55,8 @@ public class PlayerAimWeapon : MonoBehaviour
         aimTransform.localScale = a;
 
         HandleShooting();
+        HandleReload();
+        ammoCount.text = bulletCount.ToString();
         }
     }
     private Vector3 GetMouseWorldPosition()
@@ -53,10 +68,11 @@ public class PlayerAimWeapon : MonoBehaviour
 
     private void HandleShooting()
     {
-        if (Input.GetMouseButtonDown(0) && UIManager.isPaused == false)
+        if (Input.GetMouseButtonDown(0) && UIManager.isPaused == false && bulletCount > 0 && isReloading == false)
         {
             Instantiate(Bullet, aimGunEndPointTransform.position, transform.rotation);
             Vector3 mousePosition = GetMouseWorldPosition();
+            bulletCount--;
             // ANIMACJA 
             OnShoot?.Invoke(this, new OnShootEventArgs
             {
@@ -65,4 +81,21 @@ public class PlayerAimWeapon : MonoBehaviour
             }); 
         }
     }
+    private void HandleReload()
+    {
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            isReloading = true;
+            ReloadingText.SetActive(true);
+            Invoke("Reload", reloadTime);
+        }
+    }
+
+    public void Reload()
+    {
+        bulletCount = maxAmmo;
+        isReloading = false;
+        ReloadingText.SetActive(false);
+    }
+
 }
