@@ -235,4 +235,4 @@ MonoBehaviour:
   hiveSprite: {fileID: 3300089596658759939}
   PlayerVal: {fileID: 0}
   hiveTier2sprite: {fileID: 21300000, guid: 8e0dfdbac0f012e41821c245db5afaf1, type: 3}
-  hiveTier3sprite: {fileID: 0}
+  hiveTier3sprite: {fileID: 21300000, guid: 47924b54d8fb0b047a6a19d1fa4e0ad4, type: 3}

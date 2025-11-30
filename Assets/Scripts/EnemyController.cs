@@ -1,92 +1,105 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
-[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyController : MonoBehaviour
 {
-    [Header("Stats")]
-    [SerializeField] private float speed = 3.5f;
-    [SerializeField] private float maxHealth = 5f;
-
-    [Header("FX")]
-    [Tooltip("Assign your DamageNumber (TMP) prefab here")]
-    public GameObject damageNumberPrefab;
-
-    [Header("Refs (auto-wired)")]
-    public WaveSpawner WS;               // found via tag "WaveLogic"
-    private Transform target;            // hive (tag "Hive")
-
+    [Header("Movement")]
+    [SerializeField] private float speed = 2.0f;
     private float currentSpeed;
+    public Transform target;               // Hive
+
+    [Header("Health Scaling")]
+    public float baseHealth = 5f;          // HP on waves 1–wavesPerStep
+    public float extraHealthPerStep = 2f;  // extra HP every step
+    public int wavesPerStep = 10;          // every X waves they get tankier
+
+    [Header("References")]
+    public GameObject enemy;               // usually this gameObject
+    public WaveSpawner WS;                 // set via tag "WaveLogic" if left empty
+    public GameObject damageNumberPrefab;  // floating damage text prefab
+
     private float health;
-    private bool isDead;
-    private bool spawnerNotified;
-
-    void Awake()
-    {
-        // Rigidbody setup so trigger events fire reliably
-        var rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f;
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-
-        // Ensure collider is trigger (barbed wire & bullets rely on trigger)
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
-    }
+    private bool isDead = false;
 
     void Start()
     {
-        health = maxHealth;
+        if (!enemy) enemy = gameObject;
+
+        // Find WaveSpawner
+        if (!WS)
+        {
+            GameObject w = GameObject.FindGameObjectWithTag("WaveLogic");
+            if (w) WS = w.GetComponent<WaveSpawner>();
+        }
+
+        // Find hive target
+        if (!target)
+        {
+            GameObject hive = GameObject.FindGameObjectWithTag("Hive");
+            if (hive) target = hive.transform;
+        }
+
         currentSpeed = speed;
 
-        var wsObj = GameObject.FindGameObjectWithTag("WaveLogic");
-        if (wsObj) WS = wsObj.GetComponent<WaveSpawner>();
-        else Debug.LogWarning("[EnemyController] No WaveSpawner with tag 'WaveLogic' found.");
-
-        var hive = GameObject.FindGameObjectWithTag("Hive");
-        if (hive) target = hive.transform;
-        else Debug.LogWarning("[EnemyController] No object with tag 'Hive' found.");
+        // ---- HEALTH SCALING ----
+        int currentWave = (WS != null) ? WS.currWave : 1;
+        int step = Mathf.Max(0, (currentWave - 1) / Mathf.Max(1, wavesPerStep));
+        health = baseHealth + step * extraHealthPerStep;
+        // Debug.Log($"Normal enemy wave {currentWave}, HP = {health}");
     }
 
     void Update()
     {
-        // reacquire target if it was created later
-        if (!target)
-        {
-            var hive = GameObject.FindGameObjectWithTag("Hive");
-            if (hive) target = hive.transform;
-            if (!target) return;
-        }
+        if (isDead || !target) return;
 
-        // move toward hive
-        transform.position = Vector2.MoveTowards(transform.position, target.position, currentSpeed * Time.deltaTime);
+        // Move toward hive
+        transform.position = Vector2.MoveTowards(
+            transform.position,
+            target.position,
+            currentSpeed * Time.deltaTime
+        );
+
+        // keep z constant
         transform.position = new Vector3(transform.position.x, transform.position.y, 1f);
-
-        if (!isDead && health <= 0f)
-            Die();
     }
 
+    // ---------- COLLISION ----------
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isDead) return;
+
         if (other.CompareTag("Player"))
         {
             CharacterMovement.playerHealth--;
+            Die();
         }
         else if (other.CompareTag("Bullet"))
         {
+            // default bullet dmg = 1
             float dmg = 1f;
+
+            // Try to read a public float "damage" from BulletScript, if it exists
             var bs = other.GetComponent<BulletScript>();
-            if (bs != null && bs.GetType().GetField("damage") != null)
+            if (bs != null)
             {
-                // If BulletScript has a public float damage
-                try { dmg = (float)bs.GetType().GetField("damage").GetValue(bs); } catch { }
+                try
+                {
+                    var field = bs.GetType().GetField("damage");
+                    if (field != null && field.FieldType == typeof(float))
+                    {
+                        dmg = (float)field.GetValue(bs);
+                    }
+                }
+                catch { }
             }
+
             TakeDamage(dmg);
+
+            // optional: destroy bullet on hit
+            Destroy(other.gameObject);
         }
     }
 
-    // Called by traps via SendMessage("TakeDamage", float)
+    // Called by traps / grenade / barbed wire via SendMessage("TakeDamage", float)
     public void TakeDamage(float dmg)
     {
         if (isDead) return;
@@ -96,13 +109,15 @@ public class EnemyController : MonoBehaviour
         // Floating damage number
         if (damageNumberPrefab)
         {
-            var go = Instantiate(damageNumberPrefab, transform.position, Quaternion.identity);
+            GameObject go = Instantiate(damageNumberPrefab, transform.position, Quaternion.identity);
             var dn = go.GetComponent<DamageNumber>();
-            if (dn) dn.Init(dmg);
+            if (dn != null) dn.Init(dmg);
         }
 
         if (health <= 0f)
+        {
             Die();
+        }
     }
 
     private void Die()
@@ -110,31 +125,23 @@ public class EnemyController : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        NotifySpawnerOnce();
-        Destroy(gameObject);
+        // notify spawner
+        if (WS != null)
+        {
+            WS.EnterNameHere(gameObject);
+        }
+
+        Destroy(enemy != null ? enemy : gameObject);
     }
 
-    // Slow / Unslow (barbed wire uses these)
+    // ---------- SLOW FOR BARBED WIRE ----------
     public void SetSlowed(float slowMultiplier)
     {
-        currentSpeed = speed * Mathf.Clamp(slowMultiplier, 0.05f, 1f);
+        currentSpeed = speed * slowMultiplier;
     }
 
     public void RemoveSlow()
     {
         currentSpeed = speed;
-    }
-
-    private void OnDestroy()
-    {
-        // In case something else destroyed us (cleanup, scene change), still notify once
-        NotifySpawnerOnce();
-    }
-
-    private void NotifySpawnerOnce()
-    {
-        if (spawnerNotified) return;
-        spawnerNotified = true;
-        if (WS) WS.EnterNameHere(gameObject);
     }
 }

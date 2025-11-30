@@ -38,25 +38,33 @@ public class HiveUpgrade : MonoBehaviour
     }
 
     void Update()
+{
+    if (Input.GetKeyDown(KeyCode.E) && inRange)
     {
-        if (Input.GetKeyDown(KeyCode.E) && inRange)
+        switch (hiveTier)
         {
-            switch (hiveTier)
-            {
-                case 1:
-                    if(PlayerVal.Honey >= 2000)
-                    {
-                        hiveTier++;
-                        PlayerVal.Honey -= 2000;
-                        hiveSprite.sprite = hiveTier2sprite;
-                        PlayerVal.Tier1Hive.HivePCount--;
-                        PlayerVal.Tier2Hive.HivePCount++;
-                    }
-                    break;
-                case 2:
+            case 1:
+                if(PlayerVal.Honey >= 2000)
+                {
+                    hiveTier++;
+                    PlayerVal.Honey -= 2000;
+                    hiveSprite.sprite = hiveTier2sprite;
+                    PlayerVal.Tier1Hive.HivePCount--;
+                    PlayerVal.Tier2Hive.HivePCount++;
+                }
+                break;
 
-                    break;
-            }
+            case 2:
+                if (PlayerVal.Honey >= 5000)   // <- your T3 cost here
+                {
+                    hiveTier++;
+                    PlayerVal.Honey -= 5000;
+                    hiveSprite.sprite = hiveTier3sprite;
+                    PlayerVal.Tier2Hive.HivePCount--;
+                    PlayerVal.Tier3Hive.HivePCount++;
+                }
+                break;
         }
     }
+}
 }

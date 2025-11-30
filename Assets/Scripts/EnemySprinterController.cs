@@ -1,87 +1,98 @@
 using UnityEngine;
 
-[RequireComponent(typeof(Collider2D))]
-[RequireComponent(typeof(Rigidbody2D))]
 public class EnemySprinterController : MonoBehaviour
 {
-    [Header("Stats")]
+    [Header("Movement")]
     [SerializeField] private float speed = 6.0f;
-    [SerializeField] private float maxHealth = 3f;
+    private float currentSpeed;
+    public Transform target;
 
-    [Header("FX")]
-    [Tooltip("Assign your DamageNumber (TMP) prefab here")]
+    [Header("Health Scaling")]
+    public float baseHealth = 3f;
+    public float extraHealthPerStep = 1.5f;
+    public int wavesPerStep = 10;
+
+    [Header("References")]
+    public GameObject enemy;
+    public WaveSpawner WS;
     public GameObject damageNumberPrefab;
 
-    [Header("Refs (auto-wired)")]
-    public WaveSpawner WS;               // found via tag "WaveLogic"
-    private Transform target;            // hive (tag "Hive")
-
-    private float currentSpeed;
     private float health;
-    private bool isDead;
-    private bool spawnerNotified;
-
-    void Awake()
-    {
-        var rb = GetComponent<Rigidbody2D>();
-        rb.gravityScale = 0f;
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
-    }
+    private bool isDead = false;
 
     void Start()
     {
-        health = maxHealth;
+        if (!enemy) enemy = gameObject;
+
+        // Wave spawner
+        if (!WS)
+        {
+            GameObject w = GameObject.FindGameObjectWithTag("WaveLogic");
+            if (w) WS = w.GetComponent<WaveSpawner>();
+        }
+
+        // Target hive
+        if (!target)
+        {
+            GameObject hive = GameObject.FindGameObjectWithTag("Hive");
+            if (hive) target = hive.transform;
+        }
+
         currentSpeed = speed;
 
-        var wsObj = GameObject.FindGameObjectWithTag("WaveLogic");
-        if (wsObj) WS = wsObj.GetComponent<WaveSpawner>();
-        else Debug.LogWarning("[EnemySprinter] No WaveSpawner with tag 'WaveLogic' found.");
-
-        var hive = GameObject.FindGameObjectWithTag("Hive");
-        if (hive) target = hive.transform;
-        else Debug.LogWarning("[EnemySprinter] No object with tag 'Hive' found.");
+        // ---- HEALTH SCALING ----
+        int currentWave = (WS != null) ? WS.currWave : 1;
+        int step = Mathf.Max(0, (currentWave - 1) / Mathf.Max(1, wavesPerStep));
+        health = baseHealth + step * extraHealthPerStep;
+        // Debug.Log($"Sprinter wave {currentWave}, HP = {health}");
     }
 
     void Update()
     {
-        if (!target)
-        {
-            var hive = GameObject.FindGameObjectWithTag("Hive");
-            if (hive) target = hive.transform;
-            if (!target) return;
-        }
+        if (isDead || !target) return;
 
-        transform.position = Vector2.MoveTowards(transform.position, target.position, currentSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(
+            transform.position,
+            target.position,
+            currentSpeed * Time.deltaTime
+        );
+
         transform.position = new Vector3(transform.position.x, transform.position.y, 1f);
-
-        if (!isDead && health <= 0f)
-            Die();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (isDead) return;
+
         if (other.CompareTag("Player"))
         {
             CharacterMovement.playerHealth--;
+            Die();
         }
         else if (other.CompareTag("Bullet"))
         {
             float dmg = 1f;
+
             var bs = other.GetComponent<BulletScript>();
-            if (bs != null && bs.GetType().GetField("damage") != null)
+            if (bs != null)
             {
-                try { dmg = (float)bs.GetType().GetField("damage").GetValue(bs); } catch { }
+                try
+                {
+                    var field = bs.GetType().GetField("damage");
+                    if (field != null && field.FieldType == typeof(float))
+                    {
+                        dmg = (float)field.GetValue(bs);
+                    }
+                }
+                catch { }
             }
+
             TakeDamage(dmg);
+            Destroy(other.gameObject);
         }
     }
 
-    // For barbed wire: SendMessage("TakeDamage", floatDamagePerFrame)
+    // Called by traps / grenade / barbed wire via SendMessage("TakeDamage", float)
     public void TakeDamage(float dmg)
     {
         if (isDead) return;
@@ -90,13 +101,15 @@ public class EnemySprinterController : MonoBehaviour
 
         if (damageNumberPrefab)
         {
-            var go = Instantiate(damageNumberPrefab, transform.position, Quaternion.identity);
+            GameObject go = Instantiate(damageNumberPrefab, transform.position, Quaternion.identity);
             var dn = go.GetComponent<DamageNumber>();
-            if (dn) dn.Init(dmg);
+            if (dn != null) dn.Init(dmg);
         }
 
         if (health <= 0f)
+        {
             Die();
+        }
     }
 
     private void Die()
@@ -104,29 +117,22 @@ public class EnemySprinterController : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        NotifySpawnerOnce();
-        Destroy(gameObject);
+        if (WS != null)
+        {
+            WS.EnterNameHere(gameObject);
+        }
+
+        Destroy(enemy != null ? enemy : gameObject);
     }
 
+    // ---------- SLOW FOR BARBED WIRE ----------
     public void SetSlowed(float slowMultiplier)
     {
-        currentSpeed = speed * Mathf.Clamp(slowMultiplier, 0.05f, 1f);
+        currentSpeed = speed * slowMultiplier;
     }
 
     public void RemoveSlow()
     {
         currentSpeed = speed;
-    }
-
-    private void OnDestroy()
-    {
-        NotifySpawnerOnce();
-    }
-
-    private void NotifySpawnerOnce()
-    {
-        if (spawnerNotified) return;
-        spawnerNotified = true;
-        if (WS) WS.EnterNameHere(gameObject);
     }
 }
