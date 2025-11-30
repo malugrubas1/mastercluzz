@@ -3459,6 +3459,7 @@ GameObject:
   - component: {fileID: 1542699574}
   - component: {fileID: 1542699577}
   - component: {fileID: 1542699578}
+  - component: {fileID: 1542699579}
   m_Layer: 6
   m_Name: Character
   m_TagString: Player
@@ -3621,6 +3622,31 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1542699579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1542699569}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d99164b278fc564fb0772deb58e59d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  throwPoint: {fileID: 9824624}
+  mainCamera: {fileID: 519420031}
+  knifePrefab: {fileID: 8530863142578209102, guid: ebc0ae4258fd8da41a96a96f129b80d2, type: 3}
+  knifeKey: 324
+  knifeSpeed: 15
+  knifeCooldown: 2
+  knifeDamage: 9999
+  grenadePrefab: {fileID: 3317146016347626110, guid: b26b8a4d02d46d04b97957298d4d87fc, type: 3}
+  grenadeKey: 103
+  grenadeTravelSpeed: 10
+  grenadeCooldown: 3
+  grenadeDamage: 5
+  grenadeRadius: 2.5
 --- !u!1 &1581942792
 GameObject:
   m_ObjectHideFlags: 0
