@@ -49,6 +49,12 @@ public class EnemySprinterController : MonoBehaviour
 
     void Update()
     {
+        if (!target)
+        {
+            GameObject hive = GameObject.FindGameObjectWithTag("Hive");
+            if (hive) target = hive.transform;
+        }
+
         if (isDead || !target) return;
 
         transform.position = Vector2.MoveTowards(
@@ -58,6 +64,7 @@ public class EnemySprinterController : MonoBehaviour
         );
 
         transform.position = new Vector3(transform.position.x, transform.position.y, 1f);
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
