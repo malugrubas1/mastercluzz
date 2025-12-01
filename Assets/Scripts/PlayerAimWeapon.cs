@@ -53,7 +53,8 @@ public class PlayerAimWeapon : MonoBehaviour
             a.y = +1f;
         }
         aimTransform.localScale = a;
-
+            
+           
         HandleShooting();
         HandleReload();
         ammoCount.text = bulletCount.ToString();

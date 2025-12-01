@@ -37,17 +37,18 @@ public class PlayerValues : MonoBehaviour
 
     private void Start()
     {
+        Honey = 0;
         Tier1Hive.Income = 100;
         Tier2Hive.Income = 200;
         Tier3Hive.Income = 300;
 
-        Tier1Hive.HiveTBPCount = 3;
+        Tier1Hive.HiveTBPCount = 1;
         Tier1Hive.HivePCount = 0;
 
-        BasicTurret.TurretTBPCount = 1;
+        BasicTurret.TurretTBPCount = 0;
         BasicTurret.TurretPCount = 0;
 
-        BarbedWireCount = 2;
+        BarbedWireCount = 0;
     }
 
     private void Update()
@@ -63,6 +64,11 @@ public class PlayerValues : MonoBehaviour
 
         if (BarbedWireCounter != null)
             BarbedWireCounter.text = BarbedWireCount.ToString();
+
+
+
+        var c = GameObject.FindGameObjectsWithTag("Hive").Length;
+        
     }
 
     public void AddIncome()

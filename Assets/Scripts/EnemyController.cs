@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float speed = 2.0f;
+    [SerializeField] private float speed = 4.0f;
     private float currentSpeed;
     public Transform target;               // Hive
 
@@ -66,7 +66,14 @@ public class EnemyController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (isDead) return;
-
+        if (other.CompareTag("Hive"))
+        {
+            SetSlowed(0.4f);
+            Invoke("RemoveSlow", 0.5f);
+            var hiver = GameObject.FindGameObjectWithTag("Hive").GetComponent<HiveUpgrade>();
+            hiver.ZniszczNigger();
+            
+        }
         if (other.CompareTag("Player"))
         {
             CharacterMovement.playerHealth--;

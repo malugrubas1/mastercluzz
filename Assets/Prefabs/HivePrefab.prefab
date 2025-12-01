@@ -10,13 +10,13 @@ GameObject:
   m_Component:
   - component: {fileID: 1041465275}
   - component: {fileID: 1041465274}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1041465275
 Transform:
   m_ObjectHideFlags: 0
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 2127652746}
   - component: {fileID: 2127652748}
   - component: {fileID: 2127652747}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HivePrefab
   m_TagString: Hive
   m_Icon: {fileID: 0}
@@ -180,14 +180,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5338191653312010220}
-  m_BodyType: 2
+  m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -206,7 +206,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.08557987, y: 0.028354526}
+  m_Offset: {x: 0.026168585, y: -0.060355783}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -217,7 +217,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5.699877, y: 5.9384117}
+  m_Size: {x: 2.6527572, y: 2.9779685}
   m_EdgeRadius: 0
 --- !u!114 &2127652747
 MonoBehaviour:

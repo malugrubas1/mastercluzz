@@ -63,7 +63,14 @@ public class EnemySprinterController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (isDead) return;
+        if (other.CompareTag("Hive"))
+        {
+            SetSlowed(0.4f);
+            Invoke("RemoveSlow", 0.5f);
+            var hiver = GameObject.FindGameObjectWithTag("Hive").GetComponent<HiveUpgrade>();
+            hiver.ZniszczNigger();
 
+        }
         if (other.CompareTag("Player"))
         {
             CharacterMovement.playerHealth--;

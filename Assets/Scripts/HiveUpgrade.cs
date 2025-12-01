@@ -14,6 +14,8 @@ public class HiveUpgrade : MonoBehaviour
     [SerializeField] private Sprite hiveTier2sprite;
     [SerializeField] private Sprite hiveTier3sprite;
 
+    
+
 
     private void OnTriggerStay2D(Collider2D other)
     {
@@ -39,6 +41,8 @@ public class HiveUpgrade : MonoBehaviour
 
     void Update()
 {
+        gameObject.transform.position = new Vector3(transform.position.x, transform.position.y, 1);
+
     if (Input.GetKeyDown(KeyCode.E) && inRange)
     {
         switch (hiveTier)
@@ -66,5 +70,24 @@ public class HiveUpgrade : MonoBehaviour
                 break;
         }
     }
+
+
 }
+    public void ZniszczNigger()
+    {
+        Debug.Log("NIGGER");
+        Destroy(gameObject);
+        switch (hiveTier)
+        {
+            case 1:
+                PlayerVal.Tier1Hive.HivePCount--;
+                break;
+            case 2:
+                PlayerVal.Tier2Hive.HivePCount--;
+                break;
+            case 3:
+                PlayerVal.Tier3Hive.HivePCount--;
+                break;
+        }
+    }
 }
