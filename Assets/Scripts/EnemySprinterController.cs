@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EnemySprinterController : MonoBehaviour
 {
+    public GameObject bigBlood;
     [Header("Movement")]
     [SerializeField] private float speed = 6.0f;
     private float currentSpeed;
@@ -149,7 +150,7 @@ public class EnemySprinterController : MonoBehaviour
         {
             WS.EnterNameHere(gameObject);
         }
-
+        Instantiate(bigBlood, gameObject.transform.position, transform.rotation);
         Destroy(enemy != null ? enemy : gameObject);
     }
 

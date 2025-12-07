@@ -6,13 +6,15 @@ public class ParticleScript : MonoBehaviour
 
 {
     public Transform target;
+    public float ime = 0.5f;
+    public float speed = 5.3f;
     // Start is called before the first frame update
     void Start()
     {
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
-        Destroy(gameObject, 0.5f);
-    }
+        Destroy(gameObject, ime);
 
+    }
     // Update is called once per frame
     void Update()
     {
