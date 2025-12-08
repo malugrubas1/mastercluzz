@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02af78bd35de5a342b59dc519aaf861f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bigBlood: {fileID: 7805910332473833295, guid: 06eaf40d5e623ea479f39183f32873b1, type: 3}
   speed: 6
   target: {fileID: 0}
   baseHealth: 3

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class EnemySprinterController : MonoBehaviour
 {
+    public GameObject bigBlood;
     [Header("Movement")]
     [SerializeField] private float speed = 6.0f;
     private float currentSpeed;
@@ -49,13 +50,11 @@ public class EnemySprinterController : MonoBehaviour
 
     void Update()
     {
-        if (!target)
-        {
-            GameObject hive = GameObject.FindGameObjectWithTag("Hive");
-            if (hive) target = hive.transform;
-        }
 
-        if (isDead || !target) return;
+        if (isDead) return;
+
+        UpdateTarget();
+        if (!target) return;
 
         transform.position = Vector2.MoveTowards(
             transform.position,
@@ -65,6 +64,22 @@ public class EnemySprinterController : MonoBehaviour
 
         transform.position = new Vector3(transform.position.x, transform.position.y, 1f);
 
+    }
+
+    void UpdateTarget()
+    {
+        GameObject hive = GameObject.FindGameObjectWithTag("Hive");
+        if (hive !=null)
+        {
+            target = hive.transform;
+            return;
+        }
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player !=null)
+        {
+            target=player.transform;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -135,7 +150,7 @@ public class EnemySprinterController : MonoBehaviour
         {
             WS.EnterNameHere(gameObject);
         }
-
+        Instantiate(bigBlood, gameObject.transform.position, transform.rotation);
         Destroy(enemy != null ? enemy : gameObject);
     }
 

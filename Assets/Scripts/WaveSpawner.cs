@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,41 +10,39 @@ public class WaveSpawner : MonoBehaviour
     public GameObject enemyPrefabB;
 
     [Header("Difficulty / Wave Size")]
-    [Tooltip("Enemies in wave 1.")]
     public int baseEnemies = 6;
-    [Tooltip("How many more enemies added per wave.")]
     public float enemiesPerWave = 2.0f;
-    [Tooltip("Random extra enemies each wave (0..variance).")]
     public int variance = 3;
-    [Tooltip("Chance for prefab B versus A (0=all A, 1=all B).")]
     [Range(0f, 1f)] public float prefabBChance = 0.5f;
 
     [Header("Spawn Settings")]
-    [Tooltip("Drag your spawn point Transforms here (2–8+ around the map).")]
     public List<Transform> spawnPoints = new List<Transform>();
-    [Tooltip("If ON, picks a random spawn point each time; otherwise cycles in order.")]
     public bool randomizeSpawnPoint = true;
 
     [Header("Wave Timing")]
-    [Tooltip("Used only to pace spawns inside a wave. Wave ends when timer <= 0 AND all enemies are dead.")]
     public int waveDuration = 12;
 
     [Header("Break UI (optional)")]
-    public GameObject breakPanel;   // panel with a "Start Wave" button (optional)
-    public Text breakLabel;         // e.g., "Wave 3 — press Start" (optional)
-    public Button startWaveButton;  // hook its OnClick to StartNextWave() (optional)
+    public GameObject breakPanel;
+    public Text breakLabel;
+    public Button startWaveButton;
 
     [Header("Wave Label (optional)")]
     public Text currentWaveText;
 
+    [Header("Wave End UI (optional)")]
+    public GameObject waveEndedRedImage;
+    public GameObject waveEndedBlackImage;
+    public float waveEndedBlinkDuration = 3f;
+    public float waveEndedBlinkInterval = 0.15f;
+
     [Header("References")]
-    public LogicManager logicManager; // optional; tagged "Logic"
+    public LogicManager logicManager;
 
     [Header("Debug Info (read-only at runtime)")]
-    public List<GameObject> spawnedEnemies = new List<GameObject>();  // alive this wave
+    public List<GameObject> spawnedEnemies = new List<GameObject>();
 
-    // ---- internals ----
-    public int currWave = 0; // we start at 0; pressing StartNextWave() moves to 1
+    public int currWave = 0;
     private List<GameObject> enemiesToSpawn = new List<GameObject>();
     private float waveTimer;
     private float spawnTimer;
@@ -55,7 +54,7 @@ public class WaveSpawner : MonoBehaviour
 
     [Header("Input (optional)")]
     public bool allowKeyboardStart = true;
-    public KeyCode startKey = KeyCode.E; // physical button script can also call StartNextWave()
+    public KeyCode startKey = KeyCode.E;
 
     public bool IsInBreak => state == SpawnerState.Break;
 
@@ -70,15 +69,20 @@ public class WaveSpawner : MonoBehaviour
         if (!enemyPrefabA || !enemyPrefabB)
         {
             Debug.LogError("[WaveSpawner] Assign both enemyPrefabA and enemyPrefabB.");
-            enabled = false; return;
+            enabled = false;
+            return;
         }
         if (spawnPoints == null || spawnPoints.Count == 0)
         {
             Debug.LogError("[WaveSpawner] No spawn points set. Drag Transforms into 'spawnPoints'.");
-            enabled = false; return;
+            enabled = false;
+            return;
         }
 
-        EnterBreak(); // start paused until player starts the wave
+        if (waveEndedRedImage != null) waveEndedRedImage.SetActive(false);
+        if (waveEndedBlackImage != null) waveEndedBlackImage.SetActive(false);
+
+        EnterBreak();
     }
 
     void Update()
@@ -89,12 +93,11 @@ public class WaveSpawner : MonoBehaviour
 
     void FixedUpdate()
     {
-        // UI label
-        currentWaveText.text = currWave.ToString();
+        if (currentWaveText != null)
+            currentWaveText.text = currWave.ToString();
 
         if (state == SpawnerState.Break) return;
 
-        // Spawning cadence
         if (state == SpawnerState.Spawning)
         {
             if (spawnTimer <= 0f)
@@ -106,7 +109,7 @@ public class WaveSpawner : MonoBehaviour
                 }
                 else
                 {
-                    state = SpawnerState.WaitingClear; // all queued enemies spawned
+                    state = SpawnerState.WaitingClear;
                 }
             }
             else
@@ -115,27 +118,29 @@ public class WaveSpawner : MonoBehaviour
             }
         }
 
-        // Wave pacing
         if (waveTimer > 0f) waveTimer -= Time.fixedDeltaTime;
 
-        // End wave when timer elapsed AND all alive are gone
         if (waveTimer <= 0f && spawnedEnemies.Count == 0 && state != SpawnerState.Break)
         {
+            if (waveEndedRedImage != null || waveEndedBlackImage != null)
+            {
+                StopAllCoroutines();
+                StartCoroutine(WaveEndedBlinkRoutine());
+            }
+
             if (logicManager) logicManager.EndWave();
-            EnterBreak(); // infinite break until player starts again
+            EnterBreak();
         }
     }
 
-    // === PUBLIC: call from UI button or your physical stand script ===
     public void StartNextWave()
     {
-        if (!IsInBreak) return; // ignore if already running
+        if (!IsInBreak) return;
         currWave++;
         GenerateWave();
         ExitBreak();
     }
 
-    // --- helpers ---
     private void EnterBreak()
     {
         state = SpawnerState.Break;
@@ -157,21 +162,18 @@ public class WaveSpawner : MonoBehaviour
 
     private void GenerateWave()
     {
-        // total enemies this wave = base + linear growth + small randomness
         int extra = (variance > 0) ? Random.Range(0, variance + 1) : 0;
         int totalThisWave = Mathf.Max(1, Mathf.RoundToInt(baseEnemies + enemiesPerWave * (currWave - 1)) + extra);
 
         enemiesToSpawn.Clear();
         spawnedEnemies.Clear();
 
-        // random mix of A/B
         for (int i = 0; i < totalThisWave; i++)
         {
             bool pickB = Random.value < prefabBChance;
             enemiesToSpawn.Add(pickB ? enemyPrefabB : enemyPrefabA);
         }
 
-        // shuffle (Fisher–Yates)
         for (int i = enemiesToSpawn.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
@@ -198,16 +200,40 @@ public class WaveSpawner : MonoBehaviour
         spawnedEnemies.Add(enemy);
     }
 
-    // called by enemies when they die/despawn
     public void EnterNameHere(GameObject enemyInstance)
     {
         if (!enemyInstance) return;
         spawnedEnemies.Remove(enemyInstance);
     }
 
-    // legacy fallback (if something still calls without parameter)
     public void EnterNameHere()
     {
         if (spawnedEnemies.Count > 0) spawnedEnemies.RemoveAt(0);
+    }
+
+    IEnumerator WaveEndedBlinkRoutine()
+    {
+        float t = 0f;
+        bool redOn = false;
+
+        if (waveEndedRedImage != null) waveEndedRedImage.SetActive(false);
+        if (waveEndedBlackImage != null) waveEndedBlackImage.SetActive(false);
+
+        while (t < waveEndedBlinkDuration)
+        {
+            redOn = !redOn;
+
+            if (waveEndedRedImage != null)
+                waveEndedRedImage.SetActive(redOn);
+
+            if (waveEndedBlackImage != null)
+                waveEndedBlackImage.SetActive(!redOn);
+
+            yield return new WaitForSeconds(waveEndedBlinkInterval);
+            t += waveEndedBlinkInterval;
+        }
+
+        if (waveEndedRedImage != null) waveEndedRedImage.SetActive(false);
+        if (waveEndedBlackImage != null) waveEndedBlackImage.SetActive(false);
     }
 }

@@ -17,6 +17,11 @@ public class PlayerAimWeapon : MonoBehaviour
     public Transform aimGunEndPointTransform;
     public GameObject Bullet;
 
+    public GameObject casingPrefab;
+    public Transform casingPosition;
+    public GameObject explosionParticlePrefab;
+    public Transform bulletBoomPosition;
+
     public int bulletCount;
     public bool isReloading = false;
     public Text ammoCount;
@@ -72,8 +77,11 @@ public class PlayerAimWeapon : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && UIManager.isPaused == false && bulletCount > 0 && isReloading == false)
         {
             Instantiate(Bullet, aimGunEndPointTransform.position, transform.rotation);
+            Instantiate(casingPrefab, casingPosition.position, transform.rotation);
+            Instantiate(explosionParticlePrefab, bulletBoomPosition.position, Quaternion.identity);
             Vector3 mousePosition = GetMouseWorldPosition();
             bulletCount--;
+
             // ANIMACJA 
             OnShoot?.Invoke(this, new OnShootEventArgs
             {
